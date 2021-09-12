@@ -5,6 +5,7 @@
  */
 
 
+import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,13 +18,54 @@ import java.util.Arrays;
  */
 public class GetEHE {
         
-   String indicativoEHE08,resistencia,consistencia,ambiente,tamanomax;
-   double cmmax,cmmin,cm,agua,ca;
-   int grupo;
-   boolean validcm,validac;
+   String indicativoEHE08,consistencia,ambiente,idPlanta,correo;
+   double tamanomax,cmmax,acmin,cm,agua,a_c;
+   int grupo,resistencia,ID_formula;
+   boolean validcm,validac,firmado;
+   long fechadevalid;
+   
 
+   public void setID_formula(int ID_formula){
+       this.ID_formula=ID_formula;
+   }
+    public int getID_formula(){
+      return this.ID_formula;
+   }
+    public boolean isFirmado() {
+        return firmado;
+    }
+
+    public void setFirmado(boolean firmado) {
+        this.firmado = firmado;
+    }
+   
+ 
     public void setValidcm(boolean validcm) {
         this.validcm = validcm;
+    }
+
+    public String getIdPlanta() {
+        return idPlanta;
+    }
+
+    public void setIdPlanta(String idPlanta) {
+        this.idPlanta = idPlanta;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public long getFechadevalid() {
+        return fechadevalid;
+    }
+
+    public void setFechadevalid(long fechadevalid) {
+        this.fechadevalid = fechadevalid;
     }
 
     public void setValidac(boolean validac) {
@@ -55,11 +97,11 @@ public class GetEHE {
         this.indicativoEHE08 = indicativoEHE08;
     }
 
-    public String getResistencia() {
+    public int getResistencia() {
         return resistencia;
     }
 
-    public void setResistencia(String resistencia) {
+    public void setResistencia(int resistencia) {
         this.resistencia = resistencia;
     }
 
@@ -79,11 +121,11 @@ public class GetEHE {
         this.ambiente = ambiente;
     }
 
-    public String getTamanomax() {
+    public double getTamanomax() {
         return tamanomax;
     }
 
-    public void setTamanomax(String tamanomax) {
+    public void setTamanomax(double tamanomax) {
         this.tamanomax = tamanomax;
     }
 
@@ -95,12 +137,12 @@ public class GetEHE {
         this.cmmax = cmmax;
     }
 
-    public double getCmmin() {
-        return cmmin;
+    public double getAcmin() {
+        return acmin;
     }
 
-    public void setCmmin(double cmmin) {
-        this.cmmin = cmmin;
+    public void setAcmin(double cmmin) {
+        this.acmin = cmmin;
     }
 
     public double getCm() {
@@ -119,12 +161,12 @@ public class GetEHE {
         this.agua = agua;
     }
 
-    public double getCa() {
-        return ca;
+    public double geta_c() {
+        return a_c;
     }
 
-    public void setCa(double ca) {
-        this.ca = ca;
+    public void seta_c(double ac) {
+        this.a_c = ac;
     }
    
    public void valid(double cm,double ac,double cm1,double ac1){
@@ -146,6 +188,12 @@ public class GetEHE {
         return indicativoEHE08+"-"+resistencia+"/"+consistencia+"/"+tamanomax+"/"+ambiente;
     }
     
-    
+      
+    public String toJson () {
+        
+     String json = new Gson().toJson(this);
+     System.out.println(json);
+     return json;
+    }
      
 }

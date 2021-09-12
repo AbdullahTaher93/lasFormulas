@@ -27,7 +27,9 @@ public class AltaDeFormulas extends javax.swing.JFrame {
           String []resistencia;
           String []consistencia;
           String []ambiente;
+          String []ambientenuevo;
           double [][]values;
+          boolean flagAmbenuevo=false;
            Hashtable<Integer, GetEHE> store = new Hashtable<Integer, GetEHE>();
            int count=0;
           boolean flagisnotvis;
@@ -41,7 +43,7 @@ public class AltaDeFormulas extends javax.swing.JFrame {
         combofill();
          flagisnotvis=false;
         jLabel6.setVisible(false);
-        jComboBox5.setVisible(false);
+        ambiente2combo.setVisible(false);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
     }
@@ -64,12 +66,12 @@ public class AltaDeFormulas extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         TamanoMax = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jComboBox4 = new javax.swing.JComboBox<>();
+        ambiente1Combo = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList<>();
-        jButton1 = new javax.swing.JButton();
+        bottonAlta = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jComboBox5 = new javax.swing.JComboBox<>();
+        ambiente2combo = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jList2 = new javax.swing.JList<>();
@@ -77,7 +79,6 @@ public class AltaDeFormulas extends javax.swing.JFrame {
         jList3 = new javax.swing.JList<>();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
         cm = new javax.swing.JTextField();
         agua = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
@@ -88,7 +89,7 @@ public class AltaDeFormulas extends javax.swing.JFrame {
         ca = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        TableNoApro = new javax.swing.JTable();
         jScrollPane6 = new javax.swing.JScrollPane();
         Valid = new javax.swing.JList<>();
         jScrollPane7 = new javax.swing.JScrollPane();
@@ -96,53 +97,56 @@ public class AltaDeFormulas extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
+        jCheckBox1 = new javax.swing.JCheckBox();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        TableApro = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 36, 76, -1));
+        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 76, -1));
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(jComboBox2, new org.netbeans.lib.awtextra.AbsoluteConstraints(92, 36, 85, -1));
+        getContentPane().add(jComboBox2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 30, 85, -1));
 
         jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(jComboBox3, new org.netbeans.lib.awtextra.AbsoluteConstraints(187, 36, 58, -1));
+        getContentPane().add(jComboBox3, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 30, 58, -1));
 
         jLabel1.setText("indicativoEHE08");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
 
         jLabel2.setText("resistencia");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(104, 10, 70, -1));
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 10, 70, -1));
 
         jLabel3.setText("consistencia");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(192, 10, -1, -1));
 
         jLabel4.setText("Tamano Max");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, -1, -1));
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 10, -1, -1));
 
         TamanoMax.setText("0");
         TamanoMax.setToolTipText("");
-        getContentPane().add(TamanoMax, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 36, 61, -1));
+        getContentPane().add(TamanoMax, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 30, 61, -1));
 
         jLabel5.setText("ambiente");
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(339, 10, -1, -1));
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, -1, -1));
 
-        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(jComboBox4, new org.netbeans.lib.awtextra.AbsoluteConstraints(339, 36, -1, -1));
+        ambiente1Combo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        getContentPane().add(ambiente1Combo, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 30, -1, -1));
 
         jScrollPane1.setViewportView(jList1);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 141, 128, -1));
 
-        jButton1.setBackground(new java.awt.Color(51, 255, 51));
-        jButton1.setText("Alta");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        bottonAlta.setBackground(new java.awt.Color(51, 255, 51));
+        bottonAlta.setText("Alta");
+        bottonAlta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                bottonAltaActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 84, 102, -1));
+        getContentPane().add(bottonAlta, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 90, 102, -1));
 
         jButton2.setText("+");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -150,13 +154,13 @@ public class AltaDeFormulas extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(405, 35, -1, -1));
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 30, -1, -1));
 
-        jComboBox5.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(jComboBox5, new org.netbeans.lib.awtextra.AbsoluteConstraints(448, 36, -1, -1));
+        ambiente2combo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        getContentPane().add(ambiente2combo, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 30, -1, -1));
 
         jLabel6.setText("ambiente");
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(452, 10, 56, -1));
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 10, 56, -1));
 
         jScrollPane2.setViewportView(jList2);
 
@@ -171,9 +175,6 @@ public class AltaDeFormulas extends javax.swing.JFrame {
 
         jLabel8.setText("CM ");
         getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(219, 118, -1, -1));
-
-        jLabel9.setText("A/C");
-        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(298, 690, -1, -1));
 
         cm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -200,7 +201,7 @@ public class AltaDeFormulas extends javax.swing.JFrame {
         jLabel13.setText("A/C");
         getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(187, 64, -1, -1));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        TableNoApro.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
@@ -219,13 +220,20 @@ public class AltaDeFormulas extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane5.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
+        jScrollPane5.setViewportView(TableNoApro);
+        if (TableNoApro.getColumnModel().getColumnCount() > 0) {
+            TableNoApro.getColumnModel().getColumn(0).setResizable(false);
+            TableNoApro.getColumnModel().getColumn(0).setHeaderValue("Gruop1");
+            TableNoApro.getColumnModel().getColumn(1).setResizable(false);
+            TableNoApro.getColumnModel().getColumn(1).setHeaderValue("Grupo2");
+            TableNoApro.getColumnModel().getColumn(2).setHeaderValue("Grupo3");
+            TableNoApro.getColumnModel().getColumn(3).setHeaderValue("Grupo4");
+            TableNoApro.getColumnModel().getColumn(4).setHeaderValue("Gruop5");
+            TableNoApro.getColumnModel().getColumn(5).setHeaderValue("Gruop6");
+            TableNoApro.getColumnModel().getColumn(6).setHeaderValue("Gruop7");
         }
 
-        getContentPane().add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, 579, 402));
+        getContentPane().add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 490, 579, 180));
 
         Valid.setBackground(new java.awt.Color(153, 255, 153));
         jScrollPane6.setViewportView(Valid);
@@ -246,6 +254,48 @@ public class AltaDeFormulas extends javax.swing.JFrame {
         jLabel16.setText("Agua");
         getContentPane().add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(126, 64, -1, -1));
 
+        jCheckBox1.setText("ambiente nuevo");
+        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jCheckBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 60, -1, -1));
+
+        TableApro.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Gruop1", "Grupo2", "Grupo3", "Grupo4", "Gruop5", "Gruop6", "Gruop7"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, true, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane8.setViewportView(TableApro);
+        if (TableApro.getColumnModel().getColumnCount() > 0) {
+            TableApro.getColumnModel().getColumn(0).setResizable(false);
+            TableApro.getColumnModel().getColumn(0).setHeaderValue("Gruop1");
+            TableApro.getColumnModel().getColumn(1).setResizable(false);
+            TableApro.getColumnModel().getColumn(1).setHeaderValue("Grupo2");
+            TableApro.getColumnModel().getColumn(2).setHeaderValue("Grupo3");
+            TableApro.getColumnModel().getColumn(3).setHeaderValue("Grupo4");
+            TableApro.getColumnModel().getColumn(4).setHeaderValue("Gruop5");
+            TableApro.getColumnModel().getColumn(5).setHeaderValue("Gruop6");
+            TableApro.getColumnModel().getColumn(6).setHeaderValue("Gruop7");
+        }
+
+        getContentPane().add(jScrollPane8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 579, 180));
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
     DefaultListModel mod=new DefaultListModel();
@@ -254,11 +304,11 @@ public class AltaDeFormulas extends javax.swing.JFrame {
    DefaultListModel Grupo=new DefaultListModel();
    DefaultListModel valid=new DefaultListModel();
   DefaultListModel novalid=new DefaultListModel();
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void bottonAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bottonAltaActionPerformed
        String EHE;
        GetEHE EHE08=new GetEHE();
        double cmm,caa;
-       count++;
+   
        System.out.println(flagisnotvis);
         
             EHE08.setIndicativoEHE08(indicativoEHE08[jComboBox1.getSelectedIndex()]);
@@ -266,20 +316,27 @@ public class AltaDeFormulas extends javax.swing.JFrame {
             EHE08.setConsistencia(consistencia[jComboBox3.getSelectedIndex()]);
             EHE08.setTamanomax(TamanoMax.getText().toString());
            if(flagisnotvis==false){
-             EHE08.setAmbiente(ambiente[jComboBox4.getSelectedIndex()]);  
-             cmm=values[jComboBox1.getSelectedIndex()+3][jComboBox4.getSelectedIndex()];
-             caa=values[jComboBox1.getSelectedIndex()][jComboBox4.getSelectedIndex()];
+               if(flagAmbenuevo){
+                   EHE08.setAmbiente(ambiente[ambiente1Combo.getSelectedIndex()]);  
+             cmm=values[jComboBox1.getSelectedIndex()+9][ambiente1Combo.getSelectedIndex()];
+             caa=values[jComboBox1.getSelectedIndex()][ambiente1Combo.getSelectedIndex()];
+               }else{
+                   EHE08.setAmbiente(ambiente[ambiente1Combo.getSelectedIndex()]);  
+             cmm=values[jComboBox1.getSelectedIndex()+3][ambiente1Combo.getSelectedIndex()];
+             caa=values[jComboBox1.getSelectedIndex()][ambiente1Combo.getSelectedIndex()];
+               }
+             
            }
             
            else{
-               EHE08.setAmbiente(ambiente[jComboBox4.getSelectedIndex()]+"+"+ambiente[jComboBox5.getSelectedIndex()]); 
-               if(values[jComboBox1.getSelectedIndex()+3][jComboBox4.getSelectedIndex()]>values[jComboBox1.getSelectedIndex()+3][jComboBox5.getSelectedIndex()])
+               EHE08.setAmbiente(ambiente[ambiente1Combo.getSelectedIndex()]+"+"+ambiente[ambiente2combo.getSelectedIndex()]); 
+               if(values[jComboBox1.getSelectedIndex()+3][ambiente1Combo.getSelectedIndex()]>values[jComboBox1.getSelectedIndex()+3][ambiente2combo.getSelectedIndex()])
                { 
-                   cmm=values[jComboBox1.getSelectedIndex()+3][jComboBox4.getSelectedIndex()];
-                   caa=values[jComboBox1.getSelectedIndex()][jComboBox4.getSelectedIndex()];
+                   cmm=values[jComboBox1.getSelectedIndex()+3][ambiente1Combo.getSelectedIndex()];
+                   caa=values[jComboBox1.getSelectedIndex()][ambiente1Combo.getSelectedIndex()];
                }else{
-                   cmm=values[jComboBox1.getSelectedIndex()+3][jComboBox5.getSelectedIndex()];
-                   caa=values[jComboBox1.getSelectedIndex()][jComboBox5.getSelectedIndex()];
+                   cmm=values[jComboBox1.getSelectedIndex()+3][ambiente2combo.getSelectedIndex()];
+                   caa=values[jComboBox1.getSelectedIndex()][ambiente2combo.getSelectedIndex()];
                }
                    }
            
@@ -289,6 +346,11 @@ public class AltaDeFormulas extends javax.swing.JFrame {
         EHE08.setCmmax(cmm);
         EHE08.setCmmin(caa);
         EHE08.setGrupo(jComboBox2.getSelectedIndex()+1);
+        EHE08.setFirmado(true);
+        EHE08.setCorreo("abdullah@yahoo.com");
+        EHE08.setFechadevalid(16000005L);
+        EHE08.setIdPlanta("Planta1");
+        
         
         EHE08.setCm( Double.valueOf(cm.getText()));
         EHE08.setAgua( Double.valueOf(agua.getText()));
@@ -336,15 +398,17 @@ public class AltaDeFormulas extends javax.swing.JFrame {
         novalid.addElement(nov);
         flagisnotvis=false;
         jLabel6.setVisible(false);
-        jComboBox5.setVisible(false);
+        ambiente2combo.setVisible(false);
         // TODO add your handling co
         
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        new Grupos(store);
+            count++;
+    }//GEN-LAST:event_bottonAltaActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         jLabel6.setVisible(true);
-        jComboBox5.setVisible(true);
+        ambiente2combo.setVisible(true);
         flagisnotvis=true;
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -352,6 +416,17 @@ public class AltaDeFormulas extends javax.swing.JFrame {
     private void cmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmActionPerformed
+
+    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+        // TODO add your handling code here:
+        if(jCheckBox1.isSelected()){
+            flagAmbenuevo=true;
+            
+        }else{
+            flagAmbenuevo=false;
+        }
+        combofill();
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -394,18 +469,21 @@ public class AltaDeFormulas extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList<String> NoValid;
+    private javax.swing.JTable TableApro;
+    private javax.swing.JTable TableNoApro;
     private javax.swing.JTextField TamanoMax;
     private javax.swing.JList<String> Valid;
     private javax.swing.JTextField agua;
+    private javax.swing.JComboBox<String> ambiente1Combo;
+    private javax.swing.JComboBox<String> ambiente2combo;
+    private javax.swing.JButton bottonAlta;
     private javax.swing.JTextField ca;
     private javax.swing.JTextField cm;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JComboBox<String> jComboBox3;
-    private javax.swing.JComboBox<String> jComboBox4;
-    private javax.swing.JComboBox<String> jComboBox5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -421,7 +499,6 @@ public class AltaDeFormulas extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JList<String> jList1;
     private javax.swing.JList<String> jList2;
     private javax.swing.JList<String> jList3;
@@ -433,7 +510,7 @@ public class AltaDeFormulas extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JScrollPane jScrollPane8;
     // End of variables declaration//GEN-END:variables
 
  void GetEHE() throws FileNotFoundException{
@@ -463,10 +540,11 @@ public class AltaDeFormulas extends javax.swing.JFrame {
              indicativoEHE08=indicativoEHE088;
              String ambiente1[]=EHE081[1].split(",");
              ambiente=ambiente1;
-             double values1[][]=new double[9][ambiente1.length];
+             ambientenuevo=EHE081[2].split(",");
+             double values1[][]=new double[15][ambiente1.length];
                     for(int i=0;i<values1.length;i++)
                     {
-                        values1[i]=Arrays.stream(EHE081[i+2].split(",")).mapToDouble(Double::parseDouble).toArray();
+                        values1[i]=Arrays.stream(EHE081[i+3].split(",")).mapToDouble(Double::parseDouble).toArray();
                                 
                     }
                     
@@ -484,6 +562,8 @@ public class AltaDeFormulas extends javax.swing.JFrame {
              
               }
               values=values1;
+              for(int i=0;i<ambientenuevo.length;i++)
+                  System.out.print(values[14][i]+" ");
                         
              
             }
@@ -495,8 +575,8 @@ public class AltaDeFormulas extends javax.swing.JFrame {
     }
   private void combofill(){
        jComboBox1.removeAllItems();
-       jComboBox4.removeAllItems();
-         jComboBox5.removeAllItems();
+       ambiente1Combo.removeAllItems();
+         ambiente2combo.removeAllItems();
        jComboBox2.removeAllItems();
        jComboBox3.removeAllItems();
        
@@ -511,11 +591,18 @@ public class AltaDeFormulas extends javax.swing.JFrame {
            jComboBox3.setModel(mod);
            
            
-    
-         mod = new DefaultComboBoxModel(ambiente);
-           jComboBox4.setModel(mod);
+    if(flagAmbenuevo){
+         mod = new DefaultComboBoxModel(ambientenuevo);
+           ambiente1Combo.setModel(mod);
+        mod = new DefaultComboBoxModel(ambientenuevo);
+           ambiente2combo.setModel(mod);
+    }else{
+      mod = new DefaultComboBoxModel(ambiente);
+           ambiente1Combo.setModel(mod);
         mod = new DefaultComboBoxModel(ambiente);
-           jComboBox5.setModel(mod);
+           ambiente2combo.setModel(mod);   
+    }
+        
           
     }
 }

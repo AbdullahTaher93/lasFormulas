@@ -1,0 +1,13 @@
+
+for(int i=0;i<=Grupos;i++){
+                 sql="SELECT MAX(Formulas.Cem) as Max, Min(Formulas.a_c) FROM Formulas where(Formulas.grupo="+i+" );";
+             statement = connection.createStatement();
+             result = statement.executeQuery(sql);
+                List l=new List();
+                l.add(result.getDouble("Max")+"");
+                l.add(result.getDouble("Min")+"");
+                
+                MaxMinGrupos.put(i, l);
+                System.out.println("Grupo "+i+" = "+l.getItems());
+               
+            }
