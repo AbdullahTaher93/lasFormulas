@@ -1,23 +1,59 @@
 package com.eqa.formula.screen;
 
 
+
+import com.eqa.auth.connctionWithFirebase;
+import com.eqa.formula.DataBase.ConnectionWithFirebase;
 import com.eqa.formula.DataBase.GetEHE;
 import com.eqa.formula.utilidades.TableColorCell;
 import com.eqa.formula.DataBase.database;
+import com.eqa.formula.utilidades.CreatePdfDocument;
+import com.eqa.formula.utilidades.Printer;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.DocumentException;
+import com.mysql.jdbc.Connection;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Image;
 
 import java.awt.List;
+import java.awt.Toolkit;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.ProtocolException;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DebugGraphics;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import javax.swing.table.DefaultTableModel;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JasperViewer;
+import org.json.simple.parser.ParseException;
+import com.google.firebase.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 /*
@@ -31,25 +67,43 @@ import javax.swing.table.DefaultTableModel;
  * @author Abdullah_PC
  */
 public class Alta extends javax.swing.JFrame {
+    //Firebase
+    
 database db;
 double CemMax,acMin;
 boolean flagupdate=false;
 int ID_formula;
 Hashtable<Integer, GetEHE> store = new Hashtable<Integer, GetEHE>();
 Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
+String path="",name;
+Date fechadesde;
+static String plantaID,plantaDes;
+
+
 
     /**
      * Creates new form Alta
+     * @param PlantaID
+     * @param PlantaDes
      */
-    public Alta() {
+    public Alta(String PlantaID,String PlantaDes) {
+        
         initComponents();
-        db=new database(1, "HM");
+        db=new database(1, "HM","");
         DefaultComboBoxModel mod = new DefaultComboBoxModel(db.getAmbiente1().getItems());
         CompoAmbiente1.setModel(mod);
         BottonAddAmb3.setVisible(false);
         CompoAmbiente2.setVisible(false);
         CompoAmbiente3.setVisible(false);
+        BottonAddAmb4.setVisible(false);
+        CompoAmbiente4.setVisible(false);
         sacaFormulas("");
+        Alta.plantaID=PlantaID;
+        Alta.plantaDes=PlantaDes;
+     
+        lableDesPlanta.setText(plantaDes);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         
     }
 
@@ -65,7 +119,7 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
         CompoEHE = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         CompoResistencia = new javax.swing.JComboBox<>();
-        jLabel2 = new javax.swing.JLabel();
+        LableResistencia = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         CompoConsistencia = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
@@ -136,11 +190,28 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
         jLabel20 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         ButtonDeletFormula = new javax.swing.JButton();
+        Buttonfirmar = new javax.swing.JButton();
+        BottonAddAmb4 = new javax.swing.JButton();
+        CompoAmbiente4 = new javax.swing.JComboBox<>();
+        bottonOuctar = new javax.swing.JButton();
+        bottonAparecer = new javax.swing.JButton();
+        ButtonFirma2 = new javax.swing.JButton();
+        imageFirma = new javax.swing.JLabel();
+        TextName = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        CheckBoxAmbienteNuevas = new javax.swing.JCheckBox();
+        jLabel6 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        DateValid = new com.toedter.calendar.JDateChooser();
+        jLabel22 = new javax.swing.JLabel();
+        lableDesPlanta = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(255, 255, 153));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        CompoEHE.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "HM", "HA", "HP" }));
+        CompoEHE.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "HM", "HA", "HP", "HL", "HNE" }));
         CompoEHE.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CompoEHEActionPerformed(evt);
@@ -154,8 +225,8 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
         CompoResistencia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "20", "25", "30", "35", "40", "45", "50" }));
         getContentPane().add(CompoResistencia, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 30, 85, -1));
 
-        jLabel2.setText("Resistencia");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 10, 70, -1));
+        LableResistencia.setText("Resistencia");
+        getContentPane().add(LableResistencia, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 10, 70, -1));
 
         jLabel3.setText("consistencia");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 10, -1, -1));
@@ -194,6 +265,11 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
         jLabel7.setText("Ambiente");
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 10, 70, -1));
 
+        CompoAmbiente3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CompoAmbiente3ActionPerformed(evt);
+            }
+        });
         getContentPane().add(CompoAmbiente3, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 30, 80, -1));
 
         BottonAddAmb3.setText("+");
@@ -228,7 +304,7 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
                 ButtonAltaActionPerformed(evt);
             }
         });
-        getContentPane().add(ButtonAlta, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 80, 80, -1));
+        getContentPane().add(ButtonAlta, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 80, 80, 30));
         getContentPane().add(TextCem, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 60, -1));
 
         Textac.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -243,6 +319,7 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
         });
         getContentPane().add(Textac, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 80, 60, -1));
 
+        TextAgua.setEnabled(false);
         TextAgua.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TextAguaMouseClicked(evt);
@@ -270,7 +347,7 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
                 SaveDataActionPerformed(evt);
             }
         });
-        getContentPane().add(SaveData, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 550, -1, -1));
+        getContentPane().add(SaveData, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 530, 70, -1));
 
         ComboGrupo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         ComboGrupo.addActionListener(new java.awt.event.ActionListener() {
@@ -282,15 +359,23 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
 
         TableGrupo.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Formula", "Cem", "a/c", "Valid Cem", "Valid a/cl", "ID_formual", "Grupo", "Min Cem", "Max a/c"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         TableGrupo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TableGrupoMouseClicked(evt);
@@ -488,16 +573,142 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
                 ButtonDeletFormulaActionPerformed(evt);
             }
         });
-        getContentPane().add(ButtonDeletFormula, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 550, -1, -1));
+        getContentPane().add(ButtonDeletFormula, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 560, -1, -1));
+
+        Buttonfirmar.setText("Firmar");
+        Buttonfirmar.setEnabled(false);
+        Buttonfirmar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ButtonfirmarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(Buttonfirmar, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 380, 130, -1));
+
+        BottonAddAmb4.setText("+");
+        BottonAddAmb4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BottonAddAmb4ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(BottonAddAmb4, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 30, 40, -1));
+
+        getContentPane().add(CompoAmbiente4, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 30, 80, -1));
+
+        bottonOuctar.setText("Ouctar");
+        bottonOuctar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bottonOuctarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(bottonOuctar, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 530, 80, -1));
+
+        bottonAparecer.setText("Aparecer");
+        bottonAparecer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bottonAparecerActionPerformed(evt);
+            }
+        });
+        getContentPane().add(bottonAparecer, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 560, -1, -1));
+
+        ButtonFirma2.setText("Importar Firma");
+        ButtonFirma2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ButtonFirma2ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(ButtonFirma2, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 410, 130, -1));
+        getContentPane().add(imageFirma, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 550, 130, 100));
+
+        TextName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TextNameActionPerformed(evt);
+            }
+        });
+        getContentPane().add(TextName, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 460, 130, 30));
+
+        jLabel2.setText("Fecha");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 500, 130, -1));
+
+        CheckBoxAmbienteNuevas.setText("Ambiente Nuevas");
+        CheckBoxAmbienteNuevas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CheckBoxAmbienteNuevasActionPerformed(evt);
+            }
+        });
+        getContentPane().add(CheckBoxAmbienteNuevas, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 80, 140, -1));
+
+        jLabel6.setText("Nombre de Técnico");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 440, 120, -1));
+
+        jButton1.setText("LogOut");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 620, -1, -1));
+
+        DateValid.setToolTipText("");
+        DateValid.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                DateValidFocusLost(evt);
+            }
+        });
+        getContentPane().add(DateValid, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 520, 130, 30));
+
+        jLabel22.setText("Planta");
+        getContentPane().add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 360, 40, -1));
+
+        lableDesPlanta.setText("jLabel24");
+        getContentPane().add(lableDesPlanta, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 360, 100, -1));
+
+        jButton2.setText("jButton2");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 230, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void CompoEHEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CompoEHEActionPerformed
         // TODO add your handling code here:
-        db=new database(1, CompoEHE.getSelectedItem().toString());
+        DefaultComboBoxModel modRec=new DefaultComboBoxModel() ;
+   
+        db=new database(1, CompoEHE.getSelectedItem().toString(),"");
         DefaultComboBoxModel mod = new DefaultComboBoxModel(db.getAmbiente1().getItems());
         CompoAmbiente1.setModel(mod);
+        
+            if(CompoEHE.getSelectedIndex()==3){
+            CompoResistencia.removeAllItems();
+           CompoResistencia.setModel(modRec);
+          modRec.addElement("100");
+          modRec.addElement("150");
+          modRec.addElement("170");
+          LableResistencia.setText("Min Cem");
+        }else if(CompoEHE.getSelectedIndex()==4){
+            
+        CompoResistencia.removeAllItems();
+           CompoResistencia.setModel(modRec);
+          modRec.addElement("15");
+          modRec.addElement("17.5");
+         
+        }
+        else{
+           CompoResistencia.removeAllItems();
+           CompoResistencia.setModel(modRec);
+          modRec.addElement("20");
+          modRec.addElement("25");
+           modRec.addElement("30");
+          modRec.addElement("35"); 
+           modRec.addElement("40");
+          modRec.addElement("45"); 
+           modRec.addElement("50");
+           LableResistencia.setText("Resistencia");
+          
+        }
         
     }//GEN-LAST:event_CompoEHEActionPerformed
 
@@ -509,7 +720,7 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
     private void BottonAddAmb2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BottonAddAmb2ActionPerformed
         // TODO add your handling code here:
         if(BottonAddAmb2.getText().equalsIgnoreCase("+")){
-        db=new database(2, CompoEHE.getSelectedItem().toString());
+        db=new database(2, CompoEHE.getSelectedItem().toString(),"");
         DefaultComboBoxModel mod = new DefaultComboBoxModel(db.getAmbiente2().getItems());
          CompoAmbiente2.setModel(mod);
          CompoAmbiente2.setVisible(true);
@@ -521,8 +732,11 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
           CompoAmbiente2.setVisible(false);
          BottonAddAmb3.setVisible(false);
          CompoAmbiente3.setVisible(false);
+         BottonAddAmb4.setVisible(false);
+         CompoAmbiente4.setVisible(false);
          BottonAddAmb2.setText("+");  
          BottonAddAmb3.setText("+");  
+          BottonAddAmb4.setText("+");
         }
     }//GEN-LAST:event_BottonAddAmb2ActionPerformed
 
@@ -533,14 +747,18 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
     private void BottonAddAmb3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BottonAddAmb3ActionPerformed
         // TODO add your handling code here:
         if(BottonAddAmb3.getText().equalsIgnoreCase("+")){
-        db=new database(2, CompoEHE.getSelectedItem().toString());
-        DefaultComboBoxModel mod = new DefaultComboBoxModel(db.getAmbiente2().getItems());
+        db=new database(3, CompoEHE.getSelectedItem().toString(),"");
+        DefaultComboBoxModel mod = new DefaultComboBoxModel(db.getAmbiente3().getItems());
          CompoAmbiente3.setModel(mod);
          CompoAmbiente3.setVisible(true);
          BottonAddAmb3.setText("-");
+         BottonAddAmb4.setVisible(true);
         }else{
          CompoAmbiente3.setVisible(false);  
          BottonAddAmb3.setText("+");
+         CompoAmbiente4.setVisible(false);  
+         BottonAddAmb4.setText("+");
+          BottonAddAmb4.setVisible(false);
         }
         
     }//GEN-LAST:event_BottonAddAmb3ActionPerformed
@@ -576,18 +794,21 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
     
     private void SaveDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveDataActionPerformed
         // TODO add your handling code here:
+         int indexgrupo=ComboGrupo.getSelectedIndex();
         database db=new database();
         double cem=Double.parseDouble(TextCemEdit.getText()),ac=Double.parseDouble(Texta_cEdit.getText());
         double agua=cem*ac;
         int grupo=Integer.parseInt(TextGrupoUpdate.getText());
-        if(cem<CemMax||ac>acMin)
-         JOptionPane.showMessageDialog(null, "Error!!!! EL Cem Max ="+store.get(ID_formula).getCmmax()+" ,Y EL Min a/c = "+store.get(ID_formula).getAcmin());
+        if(cem<CemMax||ac>acMin && ComboGrupo.getSelectedIndex()>0)
+         JOptionPane.showMessageDialog(null, "Error!!!! EL Cem Min ="+CemMax+" ,Y EL Max a/c = "+acMin);
         else{
                 db.UpdateDate(cem,ac , agua,grupo ,ID_formula);
                  TextCemEdit.setText("0");
         Texta_cEdit.setText("0");
         TextGrupoUpdate.setText("0");
         sacaFormulas("");
+        ComboGrupo.setSelectedIndex(indexgrupo);
+         JOptionPane.showMessageDialog(null, "La Formula Ya esta salvada");
                 }   
        
         
@@ -596,10 +817,9 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
  
     private void ComboGrupoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboGrupoActionPerformed
         // TODO add your handling code here:
+      
        DefaultTableModel model =new DefaultTableModel();
             TableGrupo.setModel(model);
-            
-            
             model.addColumn("Formula");
             model.addColumn("Cem");
             model.addColumn("a/c");
@@ -607,26 +827,32 @@ Hashtable<Integer,List> MaxMinGrupos=new Hashtable<>();
             model.addColumn("Valid a/c");
             model.addColumn("ID_formula");
             model.addColumn("Grupo");
-            model.addColumn("Max Cem");
-             model.addColumn("Min a/c");
+            model.addColumn("Min Cem");
+            model.addColumn("Max a/c");
+            model.addColumn("Ouctar");
+            
+         
              
         for(int i=0;i<store.size();i++){
+                
             if(store.get(i).getGrupo()==ComboGrupo.getSelectedIndex()){
                 // System.out.println(store.get(i).isValidcm()+"  "+store.get(i).isValidac());
-                 Object o[]={store.get(i).gettodo(),store.get(i).getCm(),store.get(i).geta_c(),store.get(i).isValidcm(),store.get(i).isValidac(),store.get(i).getID_formula(),store.get(i).getGrupo(),store.get(i).getCmmax(),store.get(i).getAcmin()};
-              
+                 Object o[]={store.get(i).gettodo(),store.get(i).getCm(),store.get(i).geta_c(),store.get(i).isValidcm(),store.get(i).isValidac(),store.get(i).getID_formula(),store.get(i).getGrupo(),store.get(i).getCmmax(),store.get(i).getAcmin(),store.get(i).isOuctar()};
+                 
                  model.addRow(o);
                 
                  
             }
            
         }
-        TableColorCell cell=new TableColorCell();
-                TableGrupo.setDefaultRenderer(Object.class, cell);
+           TableColorCell cell=new TableColorCell();
+            TableGrupo.setDefaultRenderer(Object.class, cell);
             LMaxCem.setText(MaxMinGrupos.get(ComboGrupo.getSelectedIndex()).getItem(0));
             LMinCem.setText(MaxMinGrupos.get(ComboGrupo.getSelectedIndex()).getItem(1));
             LMaxa_c.setText(MaxMinGrupos.get(ComboGrupo.getSelectedIndex()).getItem(2));
             LMina_C.setText(MaxMinGrupos.get(ComboGrupo.getSelectedIndex()).getItem(3));
+           
+            
     }//GEN-LAST:event_ComboGrupoActionPerformed
 
     private void TableGrupoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableGrupoMouseClicked
@@ -693,21 +919,148 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
     }//GEN-LAST:event_Lista_cMouseClicked
 
     private void ButtonDeletFormulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonDeletFormulaActionPerformed
-        // TODO add your handling code here:
+ int indexgrupo=ComboGrupo.getSelectedIndex();
+        
+                // TODO add your handling code here:
         database db=new database();
     try {
         db.deleteformula(ID_formula);
         sacaFormulas("");
+        ComboGrupo.setSelectedIndex(indexgrupo);
         JOptionPane.showMessageDialog(null, "La Formula Ya esta eliminada");
     } catch (SQLException ex) {
         Logger.getLogger(Alta.class.getName()).log(Level.SEVERE, null, ex);
     }
+    
     }//GEN-LAST:event_ButtonDeletFormulaActionPerformed
 
+    private void ButtonfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonfirmarActionPerformed
+        // TODO add your handling code here:
+            try {
+        // TODO add your handling code here:\
+        name=TextName.getText();
+        fechadesde=DateValid.getDate();
+        database d=new database();
+        store =d.GetAll("");
+        
+        
+        new CreatePdfDocument(store,path,name,fechadesde,plantaDes,plantaID);
+    } catch (FileNotFoundException ex) {
+        Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (DocumentException ex) {
+        Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (IOException ex) {
+        Logger.getLogger(Alta.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (SQLException ex) {
+        Logger.getLogger(Alta.class.getName()).log(Level.SEVERE, null, ex);
+    }
+        
+        JOptionPane.showMessageDialog(null, "Ya han subido todos los formulas, se puede sacar el certificado firmado");
+    }//GEN-LAST:event_ButtonfirmarActionPerformed
+
+    private void BottonAddAmb4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BottonAddAmb4ActionPerformed
+        // TODO add your handling code here:
+          if(BottonAddAmb4.getText().equalsIgnoreCase("+")){
+        db=new database(4, CompoEHE.getSelectedItem().toString(),CompoAmbiente3.getSelectedItem().toString());
+        DefaultComboBoxModel mod = new DefaultComboBoxModel(db.getAmbiente4().getItems());
+         CompoAmbiente4.setModel(mod);
+         CompoAmbiente4.setVisible(true);
+         BottonAddAmb4.setText("-");
+        }else{
+         CompoAmbiente4.setVisible(false);  
+         BottonAddAmb4.setText("+");
+        }
+    }//GEN-LAST:event_BottonAddAmb4ActionPerformed
+
+    private void CompoAmbiente3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CompoAmbiente3ActionPerformed
+        // TODO add your handling code here:
+         db=new database(4, CompoEHE.getSelectedItem().toString(),CompoAmbiente3.getSelectedItem().toString());
+  DefaultComboBoxModel mod = new DefaultComboBoxModel(db.getAmbiente4().getItems());
+   CompoAmbiente4.setModel(mod);
+    }//GEN-LAST:event_CompoAmbiente3ActionPerformed
+
+    private void bottonOuctarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bottonOuctarActionPerformed
+        // TODO add your handling code here:
+           int indexgrupo=ComboGrupo.getSelectedIndex();
+          database db=new database();
+          db.ocultadaformula(ID_formula,true);
+          sacaFormulas("");
+            ComboGrupo.setSelectedIndex(indexgrupo);
+          JOptionPane.showMessageDialog(null, "La Formula Ya está ocultada");
+ 
+          
+    }//GEN-LAST:event_bottonOuctarActionPerformed
+
+    private void bottonAparecerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bottonAparecerActionPerformed
+
+        // TODO add your handling code here:
+        int indexgrupo=ComboGrupo.getSelectedIndex();
+         database db=new database();
+          db.ocultadaformula(ID_formula,false);
+          sacaFormulas("");
+          ComboGrupo.setSelectedIndex(indexgrupo); 
+          JOptionPane.showMessageDialog(null, "La Formula Ya está Aparecada");
+        
+    }//GEN-LAST:event_bottonAparecerActionPerformed
+
+    private void ButtonFirma2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonFirma2ActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser=new JFileChooser();
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "gif", "bmp"));
+        chooser.showOpenDialog(null);
+        File f=chooser.getSelectedFile();
+         path=f.getAbsolutePath();
+        
+        Image im=Toolkit.getDefaultToolkit().createImage(path);
+        im=im.getScaledInstance(imageFirma.getWidth(),imageFirma.getHeight(), Image.SCALE_DEFAULT);
+        ImageIcon icon=new ImageIcon(im);
+        imageFirma.setIcon(icon);
+    }//GEN-LAST:event_ButtonFirma2ActionPerformed
+
+    private void TextNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TextNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TextNameActionPerformed
+
+    private void CheckBoxAmbienteNuevasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBoxAmbienteNuevasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CheckBoxAmbienteNuevasActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        this.dispose();
+    try {
+        new Login().setVisible(true);
+    } catch (IOException ex) {
+        Logger.getLogger(Alta.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (ParseException ex) {
+        Logger.getLogger(Alta.class.getName()).log(Level.SEVERE, null, ex);
+    }
+;
+      
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void DateValidFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_DateValidFocusLost
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_DateValidFocusLost
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        database d=new database();
+    try {
+        store=d.GetAll("");
+        for(int i=0;i<store.size();i++)
+            System.out.println("From boton= "+store.get(i).isOuctar());
+    } catch (SQLException ex) {
+        Logger.getLogger(Alta.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    
+    
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main() {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -734,7 +1087,7 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Alta().setVisible(true);
+                new Alta(plantaID,plantaDes).setVisible(true);
             }
         });
     }
@@ -743,15 +1096,21 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BottonAddAmb2;
     private javax.swing.JButton BottonAddAmb3;
+    private javax.swing.JButton BottonAddAmb4;
     private javax.swing.JButton ButtonAlta;
     private javax.swing.JButton ButtonDeletFormula;
+    private javax.swing.JButton ButtonFirma2;
+    private javax.swing.JButton Buttonfirmar;
+    private javax.swing.JCheckBox CheckBoxAmbienteNuevas;
     private javax.swing.JComboBox<String> ComboGrupo;
     private javax.swing.JComboBox<String> CompoAmbiente1;
     private javax.swing.JComboBox<String> CompoAmbiente2;
     private javax.swing.JComboBox<String> CompoAmbiente3;
+    private javax.swing.JComboBox<String> CompoAmbiente4;
     private javax.swing.JComboBox<String> CompoConsistencia;
     private javax.swing.JComboBox<String> CompoEHE;
     private javax.swing.JComboBox<String> CompoResistencia;
+    private com.toedter.calendar.JDateChooser DateValid;
     private javax.swing.JLabel LCem0;
     private javax.swing.JLabel LCem1;
     private javax.swing.JLabel LCem10;
@@ -776,6 +1135,7 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
     private javax.swing.JLabel LMinCem1;
     private javax.swing.JLabel LMina_C;
     private javax.swing.JLabel LMina_C1;
+    private javax.swing.JLabel LableResistencia;
     private javax.swing.JList<String> ListCem;
     private javax.swing.JList<String> ListFormula;
     private javax.swing.JList<String> ListGrupo;
@@ -788,8 +1148,14 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
     private javax.swing.JTextField TextCem;
     private javax.swing.JTextField TextCemEdit;
     private javax.swing.JTextField TextGrupoUpdate;
+    private javax.swing.JTextField TextName;
     private javax.swing.JTextField Texta_cEdit;
     private javax.swing.JTextField Textac;
+    private javax.swing.JButton bottonAparecer;
+    private javax.swing.JButton bottonOuctar;
+    private javax.swing.JLabel imageFirma;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -803,9 +1169,11 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -815,6 +1183,7 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JLabel lableDesPlanta;
     // End of variables declaration//GEN-END:variables
     
      
@@ -845,20 +1214,16 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
         ComboGrupo.setModel(mod);
         ListGrupovalid.setModel(modList);
         boolean []max=new boolean[MaxMinGrupos.size()];
-      boolean []min=new boolean[MaxMinGrupos.size()];
-      JLabel ja=new JLabel("asdasd");
+        boolean []min=new boolean[MaxMinGrupos.size()];
+      
       
       
     
       for(int i=0;i<max.length;i++){
           mod.addElement("Grupo "+i);
             modList.addElement("Grupo "+i);
-         
-          
-          
-          
-      max[i]=true;
-      min[i]=true;
+            max[i]=true;
+             min[i]=true;
       }
       
       for(int i=0;i<MaxMinGrupos.size();i++){
@@ -869,9 +1234,10 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
              double Maxac=Double.parseDouble(MaxMinGrupos.get(i).getItem(2));
              double Minac=Double.parseDouble(MaxMinGrupos.get(i).getItem(3));
              
-             if(e.getGrupo()==i){
-                 System.out.println(i);
+             if(e.getGrupo()==i&&!e.isOuctar()){
+                 //System.out.println(i);
                  if(e.getCm()>Mincem+30||e.getCm()<Maxcem-30){
+                 System.out.println("Is ouctar =  "+e.isOuctar());
                  max[i]=false;
                  e.setValidcm(false);
              }else{
@@ -896,8 +1262,10 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
           }
     
     public void setGrupoVal(boolean max[],boolean min[]){
-                    
-        for(int i=0;i<max.length;i++)
+                boolean f=true; 
+        for(int i=0;i<max.length;i++){
+            if(!min[i]||!max[i])
+                f=false;
         switch(i){
                      case 0:
                          if(max[i]){
@@ -1068,13 +1436,23 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
                          break;
                      
                  }
+     
+        }
+        if(f){
+           Buttonfirmar.setEnabled(true);
+           ButtonFirma2.setEnabled(true);
+        }
+        else{
+             Buttonfirmar.setEnabled(false);
+            //  ButtonFirma2.setEnabled(false);
+        }
     }
     
     private void sacaFormulas(String Sql){
         database d=new database();
         try {
-                 d.GetAll(Sql);
-                store =d.getStore();
+                store = d.GetAll(Sql);
+                //d.getStore();
                  setDataToLists(store);
             } catch (SQLException ex) {
                 Logger.getLogger(Alta.class.getName()).log(Level.SEVERE, null, ex);
@@ -1092,51 +1470,195 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
     }
 
     private void formulaAlta() {
-        List formula=SolveformulaProblem();
         
+        GetEHE eHE=SolveformulaProblem();
+       
+         
         
-         database db=new database(formula);
+         if(!TextCem.getText().equalsIgnoreCase("")&&!Textac.getText().equalsIgnoreCase("")) {   
+         
+        if(CompoEHE.getSelectedIndex()<3){
+             database db=new database(eHE);
          if(Double.parseDouble(TextCem.getText())<db.getCemMax()||Double.parseDouble(Textac.getText())>db.getAcmin())
          {
-             JOptionPane.showMessageDialog(null, "Error!!!! EL Cem Max ="+db.getCemMax()+" ,Y EL Min a/c = "+db.getAcmin());
+             JOptionPane.showMessageDialog(null, "Error!!!! EL Cem Min ="+db.getCemMax()+" ,Y EL Max a/c = "+db.getAcmin());
+             
          }else{
               
               BottonAddAmb3.setVisible(false);
               CompoAmbiente2.setVisible(false);
               CompoAmbiente3.setVisible(false);
-              TextAgua.setText(Math.round(Double.parseDouble(TextCem.getText())*Double.parseDouble(Textac.getText()))+"");
+               eHE.setResistencia(Integer.parseInt(CompoResistencia.getSelectedItem().toString()));
+              eHE.setConsistencia(CompoConsistencia.getSelectedItem().toString());
+              eHE.setTamanomax(Integer.parseInt(SpinnerTamanomax.getValue().toString()));
+              eHE.setCm(Double.parseDouble(TextCem.getText()));
+              eHE.seta_c(Double.parseDouble(Textac.getText()));
+              TextAgua.setText(eHE.getAgua()+"");
+              eHE.setGrupo(CompoResistencia.getSelectedIndex()+1);
+              eHE.setCmmax(db.getCemMax());
+              eHE.setAcmin(db.getAcmin());
+              eHE.setIdPlanta(plantaID);
              
-         
-              db.SaveDate(formula, Integer.parseInt(CompoResistencia.getSelectedItem().toString()), CompoConsistencia.getSelectedItem().toString(), Integer.parseInt(SpinnerTamanomax.getValue().toString()), Double.parseDouble(TextCem.getText()), Double.parseDouble(Textac.getText()), Double.parseDouble(TextAgua.getText()), CompoResistencia.getSelectedIndex()+1,db.getCemMax(),db.getAcmin());
               
+               boolean flag=true;
+              for(int i=0;i<store.size();i++){
+                 // System.out.println(store.get(i).gettodo()+"++++++++++++"+eHE.gettodo());
+                  if(store.get(i).gettodo().equalsIgnoreCase(eHE.gettodo())){
+                     flag=false;
+                     //System.out.println(flag);
+                     break;
+                  }
+                 
+                      
+              } 
+              if(flag)
+                 db.SaveDate(eHE);
+              else{
+                 String m="";
+                   m = JOptionPane.showInputDialog("There is the same formula, add some coment to add it");
+                         if(m==null)
+                             JOptionPane.showMessageDialog(null, "same");
+                           
+                         else{
+                             eHE.setDes(m);
+                              db.SaveDate(eHE);
+                         }
+              }
               
-           
-           System.out.println(Integer.parseInt(SpinnerTamanomax.getValue().toString()));
          }
-         
+        }else{
+        //if HL o HNL
+       
+        //if HL
+        
+        if(CompoEHE.getSelectedIndex()==3){
+            System.out.println("//if HL");
+           if(Double.parseDouble(TextCem.getText())<Double.parseDouble(CompoResistencia.getSelectedItem().toString())){
+             JOptionPane.showMessageDialog(null, "Error!!!! EL Cem Min = "+CompoResistencia.getSelectedItem().toString());   
+           } else{
+              System.out.println();
+              eHE.setIndicativoEHE08(CompoEHE.getSelectedItem().toString());
+              eHE.setResistencia(Integer.parseInt(CompoResistencia.getSelectedItem().toString()));
+              eHE.setConsistencia(CompoConsistencia.getSelectedItem().toString());
+              eHE.setTamanomax(Integer.parseInt(SpinnerTamanomax.getValue().toString()));
+              eHE.setCm(Double.parseDouble(TextCem.getText()));
+              eHE.seta_c(Double.parseDouble(Textac.getText()));
+              TextAgua.setText(eHE.getAgua()+"");
+              eHE.setGrupo(0);
+              eHE.setCmmax(Integer.parseInt(CompoResistencia.getSelectedItem().toString()));
+              eHE.setAcmin(0);
+               eHE.setIdPlanta(plantaID);
+                boolean flag=true;
+              for(int i=0;i<store.size();i++){
+                 // System.out.println(store.get(i).gettodo()+"++++++++++++"+eHE.gettodo());
+                  if(store.get(i).gettodo().equalsIgnoreCase(eHE.gettodo())){
+                     flag=false;
+                     //System.out.println(flag);
+                     break;
+                  }
+                 
+                      
+              } 
+              if(flag)
+                 db.SaveDate(eHE);
+              else{
+                 String m="";
+                   m = JOptionPane.showInputDialog("There is the same formula, add some coment to add it");
+                         if(m==null)
+                             JOptionPane.showMessageDialog(null, "same");
+                           
+                         else{
+                             eHE.setDes(m);
+                              db.SaveDate(eHE);
+                         }
+              }
+           }
+        }else{
+              eHE.setIndicativoEHE08(CompoEHE.getSelectedItem().toString());
+              eHE.setResistencia(Integer.parseInt(CompoResistencia.getSelectedItem().toString()));
+              eHE.setConsistencia(CompoConsistencia.getSelectedItem().toString());
+              eHE.setTamanomax(Integer.parseInt(SpinnerTamanomax.getValue().toString()));
+              eHE.setCm(Double.parseDouble(TextCem.getText()));
+              eHE.seta_c(Double.parseDouble(Textac.getText()));
+              TextAgua.setText(eHE.getAgua()+"");
+              eHE.setGrupo(0);
+              eHE.setCmmax(0);
+              eHE.setAcmin(0);
+              eHE.setIdPlanta(plantaID);
+                boolean flag=true;
+              for(int i=0;i<store.size();i++){
+                 // System.out.println(store.get(i).gettodo()+"++++++++++++"+eHE.gettodo());
+                  if(store.get(i).gettodo().equalsIgnoreCase(eHE.gettodo())){
+                     flag=false;
+                     //System.out.println(flag);
+                     break;
+                  }
+                 
+                      
+              } 
+              if(flag)
+                 db.SaveDate(eHE);
+              else{
+                 String m="";
+                   m = JOptionPane.showInputDialog("There is the same formula, add some coment to add it");
+                         if(m==null)
+                             JOptionPane.showMessageDialog(null, "same");
+                           
+                         else{
+                             eHE.setDes(m);
+                              db.SaveDate(eHE);
+                         }
+              }
+              
+        }
+           
+    }
+        
+                      
+              
+              
+              
+                  
+        
+        
+        
          database d=new database();
         try {
-                 d.GetAll("");
-                store =d.getStore();
+                 store =d.GetAll("");
+                
                  setDataToLists(store);
             } catch (SQLException ex) {
                 Logger.getLogger(Alta.class.getName()).log(Level.SEVERE, null, ex);
             } 
          sacaFormulas("");
+         }else{
+            JOptionPane.showMessageDialog(null, "Pon Cem y a/c"); 
+         }
     }
 
-    private List SolveformulaProblem() {
+    private GetEHE SolveformulaProblem() {
+        GetEHE eHE=new GetEHE();
+     
+        if(CompoEHE.getSelectedIndex()<3){
+       eHE.setIndicativoEHE08(CompoEHE.getSelectedItem().toString());
+       eHE.setAmbiente1(CompoAmbiente1.getSelectedItem().toString());
+      // System.out.println(eHE.getAmbiente1()+"     "+eHE.getIndicativoEHE08());
         
-        List formula=new List();
-     formula.add(CompoEHE.getSelectedItem().toString());
-        formula.add(CompoAmbiente1.getSelectedItem().toString());
         if(CompoAmbiente2.isVisible())
         {
-            formula.add(CompoAmbiente2.getSelectedItem().toString());
+             eHE.setAmbiente2(CompoAmbiente2.getSelectedItem().toString());
             if(CompoAmbiente3.isVisible())
-                formula.add(CompoAmbiente3.getSelectedItem().toString());
+            {
+                 eHE.setAmbiente3(CompoAmbiente3.getSelectedItem().toString());
+                 if(CompoAmbiente4.isVisible())
+            {
+                 eHE.setAmbiente4(CompoAmbiente4.getSelectedItem().toString());
+            }
+            }
         }
-        return formula;
+        }
+        
+        return eHE;
     }
       }
     

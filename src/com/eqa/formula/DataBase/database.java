@@ -32,6 +32,8 @@ public class database {
 Hashtable<Integer, GetEHE> store = new Hashtable<Integer, GetEHE>();
 List ambiente1;
 List ambiente2;
+List ambiente3;
+List ambiente4;
 double cemMax=0,acmin=100;
 
     public double getCemMax() {
@@ -51,12 +53,21 @@ double cemMax=0,acmin=100;
     public List getAmbiente2() {
         return ambiente2;
     }
+        public List getAmbiente3() {
+        return ambiente3;
+    }
+         public List getAmbiente4() {
+        return ambiente4;
+    }
+    
 
 
     
-    public database(int codeAmb,String EHE) {
-        ambiente1=new  List();
+    public database(int codeAmb,String EHE,String Amb) {
+         ambiente1=new  List();
          ambiente2=new  List();
+         ambiente3=new List();
+         ambiente4=new List();
         String URL=".\\resources\\EHE081.accdb";
        String databaseURL = "jdbc:ucanaccess://"+URL;
          String sql;
@@ -66,10 +77,20 @@ double cemMax=0,acmin=100;
 "FROM ((ambiente1 INNER JOIN con ON ambiente1.ID_ambiente = con.ID_ambiente) INNER JOIN indicativoEHE08 ON con.ID_EHE08 = indicativoEHE08.ID_EHE08) INNER JOIN [Values] ON con.ID_code = Values.ID_code\n" +
 "WHERE (((ambiente1.ID_ambiente)<8) AND ((indicativoEHE08.indicativoEHE)='"+EHE+"'));";
                break;
-           default:
+           case 2:
                sql = "SELECT indicativoEHE08.ID_EHE08, ambiente1.ID_ambiente, indicativoEHE08.indicativoEHE, ambiente1.ambiente, Values.[a-cMin], Values.Cem_Max\n" +
 "FROM ((ambiente1 INNER JOIN con ON ambiente1.ID_ambiente = con.ID_ambiente) INNER JOIN indicativoEHE08 ON con.ID_EHE08 = indicativoEHE08.ID_EHE08) INNER JOIN [Values] ON con.ID_code = Values.ID_code\n" +
-"WHERE (((ambiente1.ID_ambiente)>7) AND ((indicativoEHE08.indicativoEHE)='"+EHE+"'));";
+"WHERE (((ambiente1.ID_ambiente)>7) AND((ambiente1.ID_ambiente)<11) AND ((indicativoEHE08.indicativoEHE)='"+EHE+"'));";
+               break;
+               case 3:
+               sql = "SELECT indicativoEHE08.ID_EHE08, ambiente1.ID_ambiente, indicativoEHE08.indicativoEHE, ambiente1.ambiente, Values.[a-cMin], Values.Cem_Max\n" +
+"FROM ((ambiente1 INNER JOIN con ON ambiente1.ID_ambiente = con.ID_ambiente) INNER JOIN indicativoEHE08 ON con.ID_EHE08 = indicativoEHE08.ID_EHE08) INNER JOIN [Values] ON con.ID_code = Values.ID_code\n" +
+"WHERE (((ambiente1.ID_ambiente)>10)  AND ((indicativoEHE08.indicativoEHE)='"+EHE+"'));";
+               break;
+               default:
+               sql = "SELECT indicativoEHE08.ID_EHE08, ambiente1.ID_ambiente, indicativoEHE08.indicativoEHE, ambiente1.ambiente, Values.[a-cMin], Values.Cem_Max\n" +
+"FROM ((ambiente1 INNER JOIN con ON ambiente1.ID_ambiente = con.ID_ambiente) INNER JOIN indicativoEHE08 ON con.ID_EHE08 = indicativoEHE08.ID_EHE08) INNER JOIN [Values] ON con.ID_code = Values.ID_code\n" +
+"WHERE (((ambiente1.ID_ambiente)>10)  AND ((ambiente1.ambiente)<>'"+Amb+"')  AND ((indicativoEHE08.indicativoEHE)='"+EHE+"'));";
                break;
           
        }
@@ -80,35 +101,61 @@ double cemMax=0,acmin=100;
              
             while (result.next()) {
                 
-                if(codeAmb==1){
-                    ambiente1.add(result.getString("ambiente"));
-                    System.out.println(result.getString("ambiente"));
-                }else{
-                    ambiente2.add(result.getString("ambiente"));
-                    System.out.println(result.getString("ambiente"));
-                }
-                
-               
-                 
-                System.out.println();
+              switch (codeAmb) {
+                  case 1:
+                      ambiente1.add(result.getString("ambiente"));
+                      // System.out.println(result.getString("ambiente"));
+                      break;
+              //System.out.println();
+                  case 2:
+                      ambiente2.add(result.getString("ambiente"));
+                      //System.out.println(result.getString("ambiente"));
+                      break;
+                  case 3:
+                      ambiente3.add(result.getString("ambiente"));
+                      // System.out.println(result.getString("ambiente"));
+                      break;
+                  default:
+                      ambiente4.add(result.getString("ambiente"));
+                      // System.out.println(result.getString("ambiente"));
+                      break;
+              }
             }
              
         } catch (SQLException ex) {
             ex.printStackTrace();
         } 
     }
-     public database(List formula) {
+     public database(GetEHE eHE) { 
+         
+         
+          List formula=new List();
+         
+          if(!eHE.getAmbiente1().equalsIgnoreCase("")){
+              formula.add(eHE.getAmbiente1());
+              if(!eHE.getAmbiente2().isEmpty())
+              {
+                  
+                  if(!eHE.getAmbiente3().equalsIgnoreCase(""))
+                  {
+                      formula.add(eHE.getAmbiente3());
+                      
+                     if(!eHE.getAmbiente4().equalsIgnoreCase(""))
+                           formula.add(eHE.getAmbiente4());
+                  }
+              }
+          }
           
           
         String URL=".\\resources\\EHE081.accdb";
        String databaseURL = "jdbc:ucanaccess://"+URL;
          String sql;
-         for(int i=1;i<formula.getItemCount();i++){
+         for(int i=0;i<formula.getItemCount();i++){
              
          
        sql = "SELECT indicativoEHE08.ID_EHE08, ambiente1.ID_ambiente, indicativoEHE08.indicativoEHE, ambiente1.ambiente, Values.[a-cMin], Values.Cem_Max\n" +
 "FROM ((ambiente1 INNER JOIN con ON ambiente1.ID_ambiente = con.ID_ambiente) INNER JOIN indicativoEHE08 ON con.ID_EHE08 = indicativoEHE08.ID_EHE08) INNER JOIN [Values] ON con.ID_code = Values.ID_code\n" +
-"WHERE (((ambiente1.ambiente)='"+formula.getItem(i)+"') AND ((indicativoEHE08.indicativoEHE)='"+formula.getItem(0)+"'));";
+"WHERE (((ambiente1.ambiente)='"+formula.getItem(i)+"') AND ((indicativoEHE08.indicativoEHE)='"+eHE.getIndicativoEHE08()+"'));";
      
         try (Connection connection = DriverManager.getConnection(databaseURL)) {
           Statement statement =connection.createStatement();
@@ -137,33 +184,35 @@ double cemMax=0,acmin=100;
              
     }
      
-  public void  SaveDate(List formula,int resistencia,String consistancia,double tamanoMax,double cem,double a_c,double  agua,int  grupo,double cemMax,double acMin){
+  public void  SaveDate(GetEHE eHE){
       Hashtable<Integer, GetEHE> store = new Hashtable<Integer, GetEHE>();
-      int index=0;
-      GetEHE e=new GetEHE();
+      
+      
        String URL=".\\resources\\EHE081.accdb";
        String databaseURL = "jdbc:ucanaccess://"+URL;
-       String amb=formula.getItem(1);
-        for(int i=2;i<formula.getItemCount();i++){
-        amb=amb+"+"+formula.getItem(i);
-        }
+       
       try (Connection connection = DriverManager.getConnection(databaseURL)) {
              
              
-            String sql = "INSERT INTO Formulas (EHE, resistencia, consistencia,tamanoMax,ambiente,cem,a_c,agua,grupo,cemMax,acMin) VALUES (?, ?, ?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO Formulas (EHE, resistencia, consistencia,tamanoMax,ambiente,cem,a_c,agua,grupo,cemMax,acMin,des,formulaCompleta,ouctar,validcem,validac) VALUES (?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
              
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, formula.getItem(0));
-            preparedStatement.setInt(2, resistencia);
-            preparedStatement.setString(3, consistancia);
-            preparedStatement.setDouble(4, tamanoMax);
-            preparedStatement.setString(5, amb);
-            preparedStatement.setDouble(6, cem);
-            preparedStatement.setDouble(7, a_c);
-            preparedStatement.setDouble(8, agua);
-            preparedStatement.setInt(9, grupo);
-            preparedStatement.setDouble(10, cemMax);
-            preparedStatement.setDouble(11, acMin);
+            preparedStatement.setString(1, eHE.getIndicativoEHE08());
+            preparedStatement.setInt(2, eHE.getResistencia());
+            preparedStatement.setString(3, eHE.getConsistencia());
+            preparedStatement.setInt(4, eHE.getTamanomax());
+            preparedStatement.setString(5, eHE.getAmbientes());
+            preparedStatement.setDouble(6, eHE.getCm());
+            preparedStatement.setDouble(7, eHE.geta_c());
+            preparedStatement.setDouble(8, eHE.getAgua());
+            preparedStatement.setInt(9, eHE.getGrupo());
+            preparedStatement.setDouble(10, eHE.getCmmax());
+            preparedStatement.setDouble(11, eHE.getAcmin());
+            preparedStatement.setString(12, eHE.getDes());
+            preparedStatement.setString(13, eHE.gettodo());
+            preparedStatement.setBoolean(14, eHE.isOuctar());
+            preparedStatement.setBoolean(15, eHE.isValidac());
+            preparedStatement.setBoolean(16, eHE.isValidcm());
             
             
             
@@ -181,9 +230,7 @@ double cemMax=0,acmin=100;
       
   }
   public void  UpdateDate(double cem,double a_c,double  agua,int  grupo,int ID_formula){
-      Hashtable<Integer, GetEHE> store = new Hashtable<Integer, GetEHE>();
-      int index=0;
-      GetEHE e=new GetEHE();
+     
        String URL=".\\resources\\EHE081.accdb";
        String databaseURL = "jdbc:ucanaccess://"+URL;
       
@@ -215,10 +262,10 @@ double cemMax=0,acmin=100;
         }
       
   }
-  public void GetAll(String S) throws SQLException{
+  public Hashtable<Integer, GetEHE> GetAll(String S) throws SQLException{
       
       int index=0;
-      
+      Hashtable<Integer, GetEHE> alldata = new Hashtable<>();
        String URL=".\\resources\\EHE081.accdb";
        String databaseURL = "jdbc:ucanaccess://"+URL;
          try (Connection connection = DriverManager.getConnection(databaseURL)) {
@@ -237,21 +284,26 @@ double cemMax=0,acmin=100;
                 e.setIndicativoEHE08(result.getString("EHE"));
                 e.setResistencia(result.getInt("resistencia"));
                 e.setConsistencia(result.getString("consistencia"));
-                e.setTamanomax(result.getDouble("tamanoMax"));
-                e.setAmbiente(result.getString("ambiente"));
+                e.setTamanomax(result.getInt("tamanoMax"));
+                e.setAmbiente1(result.getString("ambiente"));
                 e.setCm(result.getDouble("cem"));
                 e.seta_c(result.getDouble("a_c"));
                 e.setAgua(result.getDouble("agua"));
                 e.setGrupo(result.getInt("grupo"));
                 e.setCmmax(result.getDouble("cemMax"));
                 e.setAcmin(result.getDouble("acMin"));
-                store.put(index, e);
+                e.setDes(result.getString("des"));
+                e.setOuctar(result.getBoolean("ouctar"));
+                
+                e.setIdPlanta(result.getString("IdPlanta"));
+                alldata.put(index, e);
                // System.out.println(store.get(index).gettodo());
                 index++;
                 
             }
             
   }
+         return alldata;
   }
   
   public Hashtable<Integer,List> getMax_Min_Grupo() throws SQLException{
@@ -268,7 +320,7 @@ double cemMax=0,acmin=100;
             }
             
             for(int i=0;i<=Grupos;i++){
-                 sql="SELECT MAX(Formulas.Cem) as Max,Min(Formulas.Cem) as mincem, Max(Formulas.a_c) as Macac,Min(Formulas.a_c) as Min FROM Formulas where(Formulas.grupo="+i+" );";
+                 sql="SELECT MAX(Formulas.Cem) as Max,Min(Formulas.Cem) as mincem, Max(Formulas.a_c) as Macac,Min(Formulas.a_c) as Min FROM Formulas where(Formulas.grupo="+i+" ) AND (Formulas.ouctar=false);";
              statement = connection.createStatement();
              result = statement.executeQuery(sql);
                 List l=new List();
@@ -305,4 +357,65 @@ double cemMax=0,acmin=100;
             
   }
   }
+
+    public void ocultadaformula(int ID_formula,boolean ouctar) {
+        
+       String URL=".\\resources\\EHE081.accdb";
+       String databaseURL = "jdbc:ucanaccess://"+URL;
+      
+      try (Connection connection = DriverManager.getConnection(databaseURL)) {
+             
+             
+            String sql = "update Formulas set  ouctar=? where Formulas.ID_formula="+ID_formula;
+             
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            
+            preparedStatement.setBoolean(1, ouctar);
+            
+            
+            
+            
+             
+            int row = preparedStatement.executeUpdate();
+             
+            if (row > 0) {
+                System.out.println("update successfully.");
+            }
+            
+             
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+     
+       
+    }
+    public void deleteall(){
+          String URL=".\\resources\\EHE081.accdb";
+       String databaseURL = "jdbc:ucanaccess://"+URL;
+      
+      try (Connection connection = DriverManager.getConnection(databaseURL)) {
+             
+             
+            String sql = "delete * from Formulas ";
+             
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            
+            
+            
+            
+            
+            
+             
+            int row = preparedStatement.executeUpdate();
+             
+            if (row > 0) {
+                System.out.println("update successfully.");
+            }
+            
+             
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        
+    }
 }

@@ -8,11 +8,7 @@ package com.eqa.formula.DataBase;
 
 
 import com.google.gson.Gson;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
+
 
 /**
  *
@@ -21,10 +17,93 @@ import java.util.Arrays;
 public class GetEHE {
         
    String indicativoEHE08,consistencia,ambiente,idPlanta,correo;
-    double tamanomax,cmmax,acmin,cm,agua,a_c;
-   int grupo,resistencia,ID_formula;
-   boolean validcm,validac,firmado;
-   long fechadevalid;
+   String ambiente1="",ambiente2="",ambiente3="",ambiente4="",des="";
+    double cmmax,acmin,cm,agua,a_c;
+   int grupo,resistencia,ID_formula,tamanomax;
+   boolean validcm,validac,firmado,ouctar=false;
+   long desdeFechadeValid,hastaFechadeValid;
+   
+
+    
+    
+   
+   
+    public String getDes() {
+        return des;
+    }
+
+    public void setDes(String des) {
+        this.des = des;
+    }
+
+    public double getA_c() {
+        return a_c;
+    }
+
+    public void setA_c(double a_c) {
+        this.a_c = a_c;
+    }
+
+    public String getAmbiente1() {
+        return ambiente1;
+    }
+
+    public void setAmbiente1(String ambiente1) {
+        this.ambiente1 = ambiente1;
+    }
+
+    public String getAmbiente2() {
+        return ambiente2;
+    }
+
+    public void setAmbiente2(String ambiente2) {
+        this.ambiente2 = ambiente2;
+    }
+
+    public String getAmbiente3() {
+        return ambiente3;
+    }
+
+    public void setAmbiente3(String ambiente3) {
+        this.ambiente3 = ambiente3;
+    }
+
+    public String getAmbiente4() {
+        return ambiente4;
+    }
+
+    public void setAmbiente4(String ambiente4) {
+        this.ambiente4 = ambiente4;
+    }
+   
+  
+   
+   
+
+    public boolean isOuctar() {
+        return ouctar;
+    }
+
+    public void setOuctar(boolean ouctar) {
+        this.ouctar = ouctar;
+    }
+
+    public long getDesdeFechadeValid() {
+        return desdeFechadeValid;
+    }
+
+    public void setDesdeFechadeValid(long desdeFechadeValid) {
+        this.desdeFechadeValid = desdeFechadeValid;
+    }
+
+    public long getHastaFechadeValid() {
+        return hastaFechadeValid;
+    }
+
+    public void setHastaFechadeValid(long hastaFechadeValid) {
+        this.hastaFechadeValid = hastaFechadeValid;
+    }
+   
    
 
    public void setID_formula(int ID_formula){
@@ -62,13 +141,7 @@ public class GetEHE {
         this.correo = correo;
     }
 
-    public long getFechadevalid() {
-        return fechadevalid;
-    }
-
-    public void setFechadevalid(long fechadevalid) {
-        this.fechadevalid = fechadevalid;
-    }
+    
 
     public void setValidac(boolean validac) {
         this.validac = validac;
@@ -123,11 +196,11 @@ public class GetEHE {
         this.ambiente = ambiente;
     }
 
-    public double getTamanomax() {
+    public int getTamanomax() {
         return tamanomax;
     }
 
-    public void setTamanomax(double tamanomax) {
+    public void setTamanomax(int tamanomax) {
         this.tamanomax = tamanomax;
     }
 
@@ -169,6 +242,8 @@ public class GetEHE {
 
     public void seta_c(double ac) {
         this.a_c = ac;
+        setAgua(Math.round(getCm()*ac));
+                
     }
    
    public void valid(double cm,double ac,double cm1,double ac1){
@@ -187,10 +262,34 @@ public class GetEHE {
    }
     
     public String gettodo(){
-        return indicativoEHE08+"-"+resistencia+"/"+consistencia+"/"+tamanomax+"/"+ambiente;
+        if(getDes()==null||getDes().equalsIgnoreCase(""))
+        return indicativoEHE08+"-"+resistencia+"/"+consistencia+"/"+tamanomax+"/"+getAmbientes()
+                
+                ;
+        else
+            return indicativoEHE08+"-"+resistencia+"/"+consistencia+"/"+tamanomax+"-"+getDes();
     }
     
-      
+    public String getAmbientes(){
+        String amb="";
+        if(!getAmbiente1().equalsIgnoreCase(""))
+        {
+            amb=getAmbiente1();
+            if(!getAmbiente2().equalsIgnoreCase(""))
+            {
+              amb=amb+"+"+getAmbiente2();  
+              if(!getAmbiente3().equalsIgnoreCase("")){
+                   amb=amb+"+"+getAmbiente3();
+              if(!getAmbiente4().equalsIgnoreCase(""))
+                   amb=amb+"+"+getAmbiente4();
+              }
+            }
+        }
+        
+        
+        
+        return amb;
+    }
     public String toJson () {
         
      String json = new Gson().toJson(this);
@@ -199,3 +298,4 @@ public class GetEHE {
     }
      
 }
+

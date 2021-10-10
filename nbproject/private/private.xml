@@ -3,11 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/EQA/Las%20Formulas/LasFormulas/src/Alta.java</file>
-            <file>file:/E:/EQA/Las%20Formulas/LasFormulas/src/lasformulas/LasFormulas.java</file>
-            <file>file:/E:/EQA/Las%20Formulas/LasFormulas/src/GetEHE.java</file>
-            <file>file:/E:/EQA/Las%20Formulas/LasFormulas/src/AltaDeFormulas.java</file>
-            <file>file:/E:/EQA/Las%20Formulas/LasFormulas/src/database.java</file>
+            <file>file:/E:/EQA/Las%20Formulas/LasFormulas/src/com/eqa/formula/DataBase/FormulasInfo.java</file>
+            <file>file:/E:/EQA/Las%20Formulas/LasFormulas/src/com/eqa/formula/utilidades/CreatePdfDocument.java</file>
+            <file>file:/E:/EQA/Las%20Formulas/LasFormulas/src/com/eqa/formula/screen/Alta.java</file>
+            <file>file:/E:/EQA/Las%20Formulas/LasFormulas/src/com/eqa/formula/DataBase/GetPlantas.java</file>
+            <file>file:/E:/EQA/Las%20Formulas/LasFormulas/src/com/eqa/formula/screen/Login.java</file>
         </group>
     </open-files>
 </project-private>
