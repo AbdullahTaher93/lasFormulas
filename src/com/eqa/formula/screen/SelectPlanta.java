@@ -9,12 +9,12 @@ import com.eqa.formula.DataBase.ConnectionWithFirebase;
 import com.eqa.formula.DataBase.FormulasInfo;
 import com.eqa.formula.DataBase.GetPlantas;
 import com.eqa.formula.DataBase.database;
-import static com.eqa.formula.screen.Alta.plantaID;
+
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.itextpdf.text.pdf.PdfName;
+
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -25,10 +25,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ProtocolException;
 import java.util.Date;
-import java.util.Hashtable;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +47,8 @@ public class SelectPlanta extends javax.swing.JFrame {
  FormulasInfo formulasInfo;
     /**
      * Creates new form SelectPlanta
+     * @throws java.net.ProtocolException
+     * @throws org.json.simple.parser.ParseException
      */
     public SelectPlanta() throws ProtocolException, ParseException, IOException {
         initComponents();
@@ -55,9 +58,10 @@ public class SelectPlanta extends javax.swing.JFrame {
          
           getIdPlanta();
           
-     } catch (IOException ex) {
+     } 
+     catch (IOException ex) {
          Logger.getLogger(SelectPlanta.class.getName()).log(Level.SEVERE, null, ex);
-     }  
+     } 
     }
 
     /**
@@ -96,7 +100,7 @@ public class SelectPlanta extends javax.swing.JFrame {
             }
         });
 
-        btoNuevosFormulas.setText("Nuevos Formulas");
+        btoNuevosFormulas.setText("Nuevas Formulas");
         btoNuevosFormulas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btoNuevosFormulasActionPerformed(evt);
@@ -152,6 +156,13 @@ public class SelectPlanta extends javax.swing.JFrame {
 
     private void btoIportatFormulasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btoIportatFormulasActionPerformed
         // TODO add your handling code here:
+       
+          if(comboPlantas.getSelectedIndex()==0||comboVersion.getSelectedIndex()==0)
+        {
+            JOptionPane.showMessageDialog(null, "Elige una planta y una version, por favor");
+            throw new IllegalAccessError("Elige una planta y una version, por favor");
+        }
+        
         if(comboVersion.getItemCount()>0&&comboVersion.getSelectedIndex()>0){
         Deletall();
         // TODO add your handling code here:
@@ -172,9 +183,13 @@ public class SelectPlanta extends javax.swing.JFrame {
 
     private void btoNuevosFormulasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btoNuevosFormulasActionPerformed
         // TODO add your handling code here:
+        if(comboPlantas.getSelectedIndex()>0){
         Deletall();
         this.dispose();
         new Alta(IdPlanta, desc).setVisible(true);
+        }
+        else
+            JOptionPane.showMessageDialog(null, "Elige Una Planta, por favor.");
     }//GEN-LAST:event_btoNuevosFormulasActionPerformed
 
     private void comboPlantasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboPlantasActionPerformed
@@ -186,7 +201,7 @@ public class SelectPlanta extends javax.swing.JFrame {
          comboVersion.removeAllItems();
        DefaultComboBoxModel mod = new DefaultComboBoxModel();
        mod.addElement("Elige Version");
-       for(int i=1;i<=versions;i++)
+       for(int i=versions;0<i;i--)
            mod.addElement("V"+i);
        comboVersion.setModel(mod);
         
@@ -210,12 +225,18 @@ public class SelectPlanta extends javax.swing.JFrame {
     }//GEN-LAST:event_comboVersionActionPerformed
 
     private void btoNuevosFormulas1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btoNuevosFormulas1ActionPerformed
-     try {
+        if(comboPlantas.getSelectedIndex()==0||comboVersion.getSelectedIndex()==0)
+        {
+            JOptionPane.showMessageDialog(null, "Elige una planta y una version, por favor");
+            throw new IllegalAccessError("Elige una planta y una version, por favor");
+        }
+        
+        try {
          // TODO add your handling code here:
         
          String result = GetResult();
          GetFormulasFromCloud(result);
-        System.out.println(formulasInfo.getPDF());
+        
         String pdfpath=comboPlantas.getSelectedItem()+""+new Date().getTime()+".pdf";
          File file = new File(pdfpath);
         
@@ -336,22 +357,12 @@ public class SelectPlanta extends javax.swing.JFrame {
     }
      
      public void GetFormulasFromCloud(String result){
-          
-        
-        
-        
-    try {
-        result = ReadJsonFile("formulas");
+         
+         
          Gson g=new Gson();
          JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject();
          formulasInfo=g.fromJson(jsonObject.toString(), FormulasInfo.class);
-            System.out.println(formulasInfo.getDesdeFechadeValid());
-            System.out.println(formulasInfo.getStore().get(1).getCm());
-            
        
-    } catch (IOException ex) {
-        Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-    }
      }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -368,7 +379,9 @@ public class SelectPlanta extends javax.swing.JFrame {
         if(!IdPlanta.isEmpty()&&comboVersion.getSelectedIndex()>0){
         JSONObject json = new JSONObject();
         json.put("idPlanta",IdPlanta);
-        json.put("Version",comboVersion.getSelectedIndex());
+        int v=(comboVersion.getItemCount()-comboVersion.getSelectedIndex());
+       
+        json.put("Version",v+"");
         //System.out.println(IdPlanta.toString());
          result= new ConnectionWithFirebase(json.toString(),"GetFormulas").getResult();
         }

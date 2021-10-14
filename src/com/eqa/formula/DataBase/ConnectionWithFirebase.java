@@ -59,7 +59,8 @@ public class ConnectionWithFirebase {
            
    }
    public ConnectionWithFirebase(String json,String postFunction) throws IOException{
-        UsersGetPropertyValues properties = new UsersGetPropertyValues();
+      
+       UsersGetPropertyValues properties = new UsersGetPropertyValues();
       Properties prop=properties.getPropValues();
       String plataFormaFirebase=prop.getProperty("plataFormaFirebase","https://us-central1-plataformaeqa-test.cloudfunctions.net/");
        
@@ -69,11 +70,12 @@ public class ConnectionWithFirebase {
 
     private void Post_JSON(String json, String query_url) throws IOException {
             
-        
+        String result="{}";
         
         
             try {
            URL url = new URL(query_url);
+           System.out.println(url+"    "+json);
            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
            conn.setConnectTimeout(5000);
            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -84,17 +86,11 @@ public class ConnectionWithFirebase {
            OutputStream os = conn.getOutputStream();
            os.write(json.getBytes("UTF-8"));
            os.close(); 
-             
-           
-           
-           
-           
-           
-           
+           System.out.println(json+"    "+result+"  ");
            // read the response
            InputStream in = new BufferedInputStream(conn.getInputStream());
-           String result = IOUtils.toString(in, "UTF-8");
-           System.out.println(result);
+            result = IOUtils.toString(in, "UTF-8");
+           System.out.println(json+"    "+result+"  ");
                 setResult(result);
            in.close();
            conn.disconnect();
@@ -104,6 +100,7 @@ public class ConnectionWithFirebase {
            } catch (Exception e) {
    			System.out.println(e);
    		}
+            
 	
 	}
 }

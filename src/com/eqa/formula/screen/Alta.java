@@ -2,58 +2,47 @@ package com.eqa.formula.screen;
 
 
 
-import com.eqa.auth.connctionWithFirebase;
-import com.eqa.formula.DataBase.ConnectionWithFirebase;
+
 import com.eqa.formula.DataBase.GetEHE;
 import com.eqa.formula.utilidades.TableColorCell;
 import com.eqa.formula.DataBase.database;
 import com.eqa.formula.utilidades.CreatePdfDocument;
-import com.eqa.formula.utilidades.Printer;
-import com.itextpdf.text.BadElementException;
+
+
 import com.itextpdf.text.DocumentException;
-import com.mysql.jdbc.Connection;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 
 import java.awt.List;
 import java.awt.Toolkit;
-import java.awt.print.PageFormat;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
+
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.ProtocolException;
-import java.sql.DriverManager;
+
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DebugGraphics;
+
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
+
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import javax.swing.table.DefaultTableModel;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.view.JasperViewer;
+
 import org.json.simple.parser.ParseException;
-import com.google.firebase.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
 
 
 /*
@@ -205,7 +194,6 @@ static String plantaID,plantaDes;
         DateValid = new com.toedter.calendar.JDateChooser();
         jLabel22 = new javax.swing.JLabel();
         lableDesPlanta = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 153));
@@ -594,7 +582,7 @@ static String plantaID,plantaDes;
 
         getContentPane().add(CompoAmbiente4, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 30, 80, -1));
 
-        bottonOuctar.setText("Ouctar");
+        bottonOuctar.setText("Oucltar");
         bottonOuctar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bottonOuctarActionPerformed(evt);
@@ -661,14 +649,6 @@ static String plantaID,plantaDes;
 
         lableDesPlanta.setText("jLabel24");
         getContentPane().add(lableDesPlanta, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 360, 100, -1));
-
-        jButton2.setText("jButton2");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 230, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -936,7 +916,12 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
 
     private void ButtonfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonfirmarActionPerformed
         // TODO add your handling code here:
-            try {
+        if(DateValid.getDate()==null){
+             JOptionPane.showMessageDialog(null, "Entre La fecha, por favor.");
+             throw new UnsupportedOperationException("Entre La fecha, por favor."); 
+        }
+            
+        try {
         // TODO add your handling code here:\
         name=TextName.getText();
         fechadesde=DateValid.getDate();
@@ -1043,18 +1028,6 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
         
     }//GEN-LAST:event_DateValidFocusLost
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        database d=new database();
-    try {
-        store=d.GetAll("");
-        for(int i=0;i<store.size();i++)
-            System.out.println("From boton= "+store.get(i).isOuctar());
-    } catch (SQLException ex) {
-        Logger.getLogger(Alta.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     
     
     /**
@@ -1155,7 +1128,6 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
     private javax.swing.JButton bottonOuctar;
     private javax.swing.JLabel imageFirma;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1515,7 +1487,7 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
                  db.SaveDate(eHE);
               else{
                  String m="";
-                   m = JOptionPane.showInputDialog("There is the same formula, add some coment to add it");
+                   m = JOptionPane.showInputDialog("There is the same formula, add some comment to add it");
                          if(m==null)
                              JOptionPane.showMessageDialog(null, "same");
                            
@@ -1660,6 +1632,8 @@ sacaFormulas("SELECT Formulas.*, Formulas.grupo\n" +
         
         return eHE;
     }
+
+    
       }
     
               

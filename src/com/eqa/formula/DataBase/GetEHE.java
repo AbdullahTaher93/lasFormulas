@@ -267,7 +267,7 @@ public class GetEHE {
                 
                 ;
         else
-            return indicativoEHE08+"-"+resistencia+"/"+consistencia+"/"+tamanomax+"-"+getDes();
+            return indicativoEHE08+"-"+resistencia+"/"+consistencia+"/"+tamanomax+"-"+getAmbientes()+"_"+getDes();
     }
     
     public String getAmbientes(){

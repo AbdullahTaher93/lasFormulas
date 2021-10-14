@@ -14,30 +14,27 @@ import com.eqa.formula.DataBase.ConnectionWithFirebase;
 import com.eqa.formula.DataBase.FormulasInfo;
 import com.eqa.formula.DataBase.GetEHE;
 import com.eqa.formula.DataBase.GetPlantas;
-import static com.eqa.formula.utilidades.HeaderFooterPageEvent.fechadesde;
+
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.lowagie.text.Cell;
-import com.lowagie.text.pdf.PdfTable;
-import com.sun.org.apache.bcel.internal.generic.AALOAD;
-import java.awt.Color;
+
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FileInputStream;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import java.util.Date;
 import java.util.Hashtable;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.commons.codec.binary.Base64;
+
 public class CreatePdfDocument {
     
     public CreatePdfDocument(Hashtable<Integer, GetEHE> store,String path,String name,Date fechadesde,String idPlantades,String plantaID) throws FileNotFoundException, DocumentException, BadElementException, IOException{
